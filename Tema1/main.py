@@ -98,7 +98,8 @@ class Graph:
 
         continutFisier = f.read()
         self.start = obtineStive(continutFisier)
-        # verificam daca starea initiala este valida, deoarece nu dorim sa apelam functiile in cazul in care aceasta este invalida
+        # verificam daca starea initiala este valida, deoarece nu dorim sa apelam
+        # functiile in cazul in care aceasta este invalida
         nr_stive = len(self.start)
         if not self.validare_stare():
             print("Stare initiala din fisier este invalida")
@@ -113,6 +114,10 @@ class Graph:
     # verificam pozitia sferelor, a piramidelor, precum si numarul stivelor goale
     # si a celor fara piramida deasupra comparativ cu nr total de piramide
     def validare_stare(self):
+        """
+        Verifica daca starea respectiva este valida, se uita la pozitia sferelor,
+        a piramidelor precum si la numarul de piramide comparativ cu nr de stive
+        """
         nr_stive = len(self.start)
         for idx in range(nr_stive):
             for elem in range(len(self.start[idx])):
@@ -221,9 +226,6 @@ class Graph:
     # euristici
     def calculeaza_h(self, infoNod, tip_euristica="euristica banala"):
 
-        # Pentru euristica admisibila 1 am ales sa adun lungimea celor mai mici K stive, deoarece nu stim pe care vrem
-        # sa le facem vide. La aceasta am adunat costul minim al unei mutari, deoarece, in functie de cate mutari este
-        # necesar sa facem, costul real al drumului va depasi euristica.
         if tip_euristica == "euristica admisibila 1":
             euristici = []
             h = 0
@@ -236,9 +238,6 @@ class Graph:
                 euristici.append(h)
             return min(euristici)
 
-        # Pentru euristica admisibila 2 am ales sa adun lungimea celor mai mici K stive, deoarece nu stim pe care vrem
-        # sa le facem vide. La aceasta am adunat costul real al unei mutari, deoarece, in functie de cate mutari este
-        # necesar sa facem, costul real al drumului in cel mai rau caz va fi egal cu euristica.
         elif tip_euristica == "euristica admisibila 2":
             euristici = []
             h = 0
@@ -263,7 +262,7 @@ class Graph:
             copy_stive = copy.deepcopy(infoNod)
             copy_stive = sorted(copy_stive, key=lambda stiva: len(stiva))
             for i in range(len(infoNod)):
-                h = h + len(copy_stive[i]) * 3
+                h = h + len(copy_stive[i]) * 7
             for i in range(len(infoNod)):
                 for j in range(len(infoNod[i])):
                     if infoNod[i][j][0] == "piramida":
@@ -287,6 +286,7 @@ class Graph:
 def a_star(gr, nrSolutiiCautate, tip_euristica,fisier=sys.stdout):
     nr_nod = 0
     global time1
+    global timeout
     #in coada vom avea doar noduri de tip NodParcurgere (nodurile din arborele de parcurgere)
     c=[NodParcurgere(gr.start, None, 0, gr.calculeaza_h(gr.start))]
     
@@ -307,6 +307,10 @@ def a_star(gr, nrSolutiiCautate, tip_euristica,fisier=sys.stdout):
             nrSolutiiCautate-=1
             if nrSolutiiCautate==0:
                 return
+        timpCurent = time.time()
+        if timpCurent - time1 > timeout:
+            print("timeout=",timeout)
+            return
         lSuccesori=gr.genereazaSuccesori(nodCurent,tip_euristica=tip_euristica) 
         nr_nod += len(lSuccesori)
         for s in lSuccesori:
@@ -326,6 +330,7 @@ def uniform_cost(gr, nrSolutiiCautate=1, fisier=sys.stdout):
 
     nr_nod = 0
     global time1
+    global timeout
     #in coada vom avea doar noduri de tip NodParcurgere (nodurile din arborele de parcurgere)
     c=[NodParcurgere(gr.start, None, 0)]
     
@@ -346,6 +351,12 @@ def uniform_cost(gr, nrSolutiiCautate=1, fisier=sys.stdout):
             nrSolutiiCautate-=1
             if nrSolutiiCautate==0:
                 return
+
+        timpCurent = time.time()
+        if timpCurent - time1 > timeout:
+            print("timeout=",timeout)
+            return
+
         lSuccesori=gr.genereazaSuccesori(nodCurent)     
         nr_nod += len(lSuccesori)
         for s in lSuccesori:
@@ -362,6 +373,11 @@ def uniform_cost(gr, nrSolutiiCautate=1, fisier=sys.stdout):
                 c.append(s)
 
 def parsare_argumente():
+    """
+    Parseaza argumentele primite din linia de comanda si extrage fisierul de input,
+    output, nr solutii si timeout-ul
+    Le returneaza in aceasta ordine intr-o lista
+    """
     in_dir="input"
     out_dir="output"
     n=3
@@ -389,14 +405,17 @@ def parsare_argumente():
     return [in_dir, out_dir, n, timeout]
 
 time1 = time.time()
+timeout = 10
 def main():
 
+    global timeout
     in_dir, out_dir, nrSolutiiCautate, timeout = parsare_argumente()
     listaFisiereInput = os.listdir(in_dir)
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
     for fisier in listaFisiereInput:
+        global time1
         in_file = '/'.join([in_dir,fisier])
         gr=Graph(in_file)
         # print("\n\n##################\nSolutii obtinute cu A*:")
@@ -406,8 +425,13 @@ def main():
         output_location = '/'.join([out_dir,out_file])
         f = open(output_location,'w')
         f.write("\n\n##################\nSolutii obtinute cu A*:")
-        a_star(gr, nrSolutiiCautate, tip_euristica="euristica admisibila 1",
+        time1 = time.time()     # ne intereseaza timpul de la inceputul calcularii
+                                # solutiilor
+        a_star(gr, nrSolutiiCautate, tip_euristica="euristica admisibila 2",
                         fisier=f)
+        f.write("\n\n##################\nSolutii obtinute cu UCS:")
+        time1 = time.time()
+        uniform_cost(gr, nrSolutiiCautate, fisier=f)
         f.close()
 
 if(__name__ == "__main__"):
