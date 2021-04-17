@@ -1,0 +1,70 @@
+
+
+##################
+Solutii obtinute cu A*:
+Solutie:
+1)
+                /c\     
+[b]     [d] (e) [j]     
+[a]     [h] [g] [i]     
+#######################
+2)
+            [b] /c\     
+        [d] (e) [j]     
+[a]     [h] [g] [i]     
+#######################
+3)
+            [a]         
+            [b] /c\     
+        [d] (e) [j]     
+        [h] [g] [i]     
+#######################
+Cost: 4
+Lungime: 3
+Numarul de noduri este 22
+Timpul de rulare pe solutie este 2475 milisecunde
+=======================
+
+Solutie:
+1)
+                /c\     
+[b]     [d] (e) [j]     
+[a]     [h] [g] [i]     
+#######################
+2)
+            [b] /c\     
+        [d] (e) [j]     
+[a]     [h] [g] [i]     
+#######################
+3)
+        [a] [b] /c\     
+        [d] (e) [j]     
+        [h] [g] [i]     
+#######################
+Cost: 4
+Lungime: 3
+Numarul de noduri este 30
+Timpul de rulare pe solutie este 2477 milisecunde
+=======================
+
+Solutie:
+1)
+                /c\     
+[b]     [d] (e) [j]     
+[a]     [h] [g] [i]     
+#######################
+2)
+        [b]     /c\     
+        [d] (e) [j]     
+[a]     [h] [g] [i]     
+#######################
+3)
+        [b] [a] /c\     
+        [d] (e) [j]     
+        [h] [g] [i]     
+#######################
+Cost: 4
+Lungime: 3
+Numarul de noduri este 55
+Timpul de rulare pe solutie este 2483 milisecunde
+=======================

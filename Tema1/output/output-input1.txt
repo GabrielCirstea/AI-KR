@@ -1,0 +1,111 @@
+
+
+##################
+Solutii obtinute cu A*:
+Solutie:
+1)
+/c\ /k\             
+[g] (f) [j]         
+[b] (e) [d]     /m\ 
+[a] [i] [h]     [l] 
+###################
+2)
+/c\ /k\             
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h] /m\ [l] 
+###################
+3)
+/c\ /k\ [l]         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h] /m\     
+###################
+4)
+        /m\         
+/c\ /k\ [l]         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h]         
+###################
+Cost: 4
+Lungime: 4
+Numarul de noduri este 226
+Timpul de rulare pe solutie este 803 milisecunde
+=======================
+
+Solutie:
+1)
+/c\ /k\             
+[g] (f) [j]         
+[b] (e) [d]     /m\ 
+[a] [i] [h]     [l] 
+###################
+2)
+/c\                 
+[g] (f) [j]         
+[b] (e) [d]     /m\ 
+[a] [i] [h] /k\ [l] 
+###################
+3)
+/c\ /m\             
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h] /k\ [l] 
+###################
+4)
+/c\ /m\ [l]         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h] /k\     
+###################
+5)
+        /k\         
+/c\ /m\ [l]         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h]         
+###################
+Cost: 5
+Lungime: 5
+Numarul de noduri este 670
+Timpul de rulare pe solutie este 869 milisecunde
+=======================
+
+Solutie:
+1)
+/c\ /k\             
+[g] (f) [j]         
+[b] (e) [d]     /m\ 
+[a] [i] [h]     [l] 
+###################
+2)
+/c\                 
+[g] (f) [j]         
+[b] (e) [d]     /m\ 
+[a] [i] [h] /k\ [l] 
+###################
+3)
+/c\     /m\         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h] /k\ [l] 
+###################
+4)
+/c\ [l] /m\         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h] /k\     
+###################
+5)
+    /k\             
+/c\ [l] /m\         
+[g] (f) [j]         
+[b] (e) [d]         
+[a] [i] [h]         
+###################
+Cost: 5
+Lungime: 5
+Numarul de noduri este 754
+Timpul de rulare pe solutie este 882 milisecunde
+=======================
