@@ -372,12 +372,21 @@ def uniform_cost(gr, nrSolutiiCautate=1, fisier=sys.stdout):
             else:
                 c.append(s)
 
+def display_usage():
+    print("usage: " + sys.argv[0] + " [if=<input_folder>] [of=<output_folder>]" +\
+            " [n=<nr_sol>] [t=<timeout>]")
+    exit()
+
 def parsare_argumente():
     """
     Parseaza argumentele primite din linia de comanda si extrage fisierul de input,
     output, nr solutii si timeout-ul
     Le returneaza in aceasta ordine intr-o lista
     """
+    for arg in sys.argv:
+        if arg == "-h":
+            display_usage()
+
     in_dir="input"
     out_dir="output"
     n=3
@@ -396,11 +405,13 @@ def parsare_argumente():
                 n = int(''.join(check[1:]))
             except ValueError:
                 print("nr invalid")
+                display_usage()
         elif check[0] == 't':
             try:
                 timeout = int(''.join(check[1:]))
             except ValueError:
                 print("nr invalid")
+                display_usage()
 
     return [in_dir, out_dir, n, timeout]
 
