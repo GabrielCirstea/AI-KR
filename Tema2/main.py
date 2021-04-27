@@ -314,7 +314,7 @@ def get_input():
         if tip_algoritm in ['1', '2']:
             raspuns_valid = True
         else:
-            print("Nu ati ales o varianta corecta.")
+            print("Nu ati ales o varianta valida.")
 
     raspuns_valid = False
     while not raspuns_valid:
@@ -322,17 +322,7 @@ def get_input():
         if tip_nivel in ['1', '2', '3']:
             raspuns_valid = True
         else:
-            print("Nu ati ales o varianta corecta.")
-
-    raspuns_valid = False
-    while not raspuns_valid:
-        try:
-            SCMAX = int(input("Dati scorul maxim dorit: "))
-            if (type(SCMAX) is int):
-                raspuns_valid = True
-                break
-        except Exception as exc:
-            print("Valoarea data este invalida,", exc)
+            print("Nu ati ales o varianta valida.")
 
     # initializare jucatori
     raspuns_valid = False
@@ -349,7 +339,7 @@ def get_input():
         raspuns_valid = False
         while not raspuns_valid:
             try:
-                adancime = int(input("Dati adancimea dorita pentru nivelul incepator? "))
+                adancime = int(input("Dati adancimea dorita pentru nivelul incepator: "))
                 if (type(adancime) is int and adancime>=1 and adancime<=5):
                     raspuns_valid = True
                     break
@@ -361,7 +351,7 @@ def get_input():
         raspuns_valid = False
         while not raspuns_valid:
             try:
-                adancime = int(input("Dati adancimea dorita pentru nivelul mediu? "))
+                adancime = int(input("Dati adancimea dorita pentru nivelul mediu: "))
                 if (type(adancime) is int and adancime>=6 and adancime<=10):
                     raspuns_valid = True
                     break
@@ -373,7 +363,7 @@ def get_input():
         raspuns_valid = False
         while not raspuns_valid:
             try:
-                adancime = int(input("Dati adancimea dorita pentru nivelul avansat? "))
+                adancime = int(input("Dati adancimea dorita pentru nivelul avansat: "))
                 if (type(adancime) is int and adancime>=11):
                     raspuns_valid = True
                     break
@@ -403,7 +393,7 @@ def get_input():
         except Exception as exc:
             print("Valoarea data este invalida,", exc)
 
-    return [tip_algoritm, tip_nivel, SCMAX, adancime, N, M, '2']
+    return [tip_algoritm, tip_nivel, adancime, N, M, '2']
     #citire pentru interfata
     if len(interfata) != 1:
         raspuns_valid = False
@@ -418,22 +408,24 @@ def get_input():
 
 def main():
 
-    # (tip_algoritm, tip_nivel, SCMAX, adancime, N, M, interface) = get_input()
-    # le scriu asa, ca sa nu citesct mereu de la tastatura
     tip_algoritm = '1'
     tip_nivel = 1
-    adancime = 1
-    SCMAX = 10
+    adancime = 2
     Joc.JMAX = "0"
     Joc.JMIN = "x"
     N = 9   # linii
     M = 10  # coloane
     interface = '2'
+    # (tip_algoritm, tip_nivel, SCMAX, adancime, N, M, interface) = get_input()
 
     # initializare tabla
     Joc.NR_LINII = N
     Joc.NR_COLOANE = M
     tabla_curenta = Joc()
+    tabla_curenta.matr[75] = '0'
+    tabla_curenta.matr[57] = '0'
+    tabla_curenta.matr[47] = '0'
+    tabla_curenta.matr[27] = '0'
     nr_mut_calc = 0
     nr_mut_util = 0
     print("Tabla initiala")
@@ -446,7 +438,7 @@ def main():
         # setari interf grafica
         time1_tot = int(round(time.time() * 1000))
         pygame.init()
-        pygame.display.set_caption('Gabriel Cirstea x si 0')
+        pygame.display.set_caption("Gabriel Cirstea x si 0")
         # dimensiunea ferestrei in pixeli
         ecran = pygame.display.set_mode(size=(M*81-1, N*81-1))  # Nrc*100+Nrc-1, Nrl*100+Nrl-1
 
@@ -473,18 +465,6 @@ def main():
                                 linie = np // M
                                 coloana = np % M
                                 ###############################
-                                '''
-                                if stare_curenta.tabla_joc.matr[linie * N + coloana] == Joc.JMIN:
-                                    
-                                    if (de_mutat and linie == de_mutat[0] and coloana == de_mutat[1]):
-                                        # daca am facut click chiar pe patratica selectata, o deselectez
-                                        de_mutat = False
-                                        deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M)
-                                    else:
-                                        de_mutat = (linie, coloana)
-                                        # desenez gridul cu patratelul marcat
-                                        deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M, np)
-                                '''
                                 if stare_curenta.tabla_joc.matr[np] == Joc.JMIN:
                                     selected_piece = np
                                     patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr,\
@@ -642,11 +622,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    '''
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-    '''
-##functie pentru indici in clasa joc
