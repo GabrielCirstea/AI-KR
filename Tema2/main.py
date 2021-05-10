@@ -93,13 +93,10 @@ class Joc:
         # piesa dintre sindexesa selectata si locul dorit
         xMijloc = (xIndex + xSelected)//2
         yMijloc = (yIndex + ySelected)//2
-        print(xMijloc, yMijloc)
         indexMijloc = xMijloc * self.NR_COLOANE + yMijloc
-        print("index mijloc = ", indexMijloc)
         if self.matr[indexMijloc] == '0':
             self.matr[indexMijloc] = self.__class__.GOL
             self.Removed = indexMijloc
-            print("salt")
             return True
 
     def mutari(self, jucator_opus):
@@ -127,15 +124,16 @@ class Joc:
         else:
             return 0
 
-    def linii_deschise(self, jucator):
+    def patrate_deschise(self, jucator):
+        """
+        Calculeaza numarul de patratele libere, in care se mai pot pune piese
+        pentru a castiga
+        """
         nr_linii = 0
-        # numaram liniile
-        for i in range(self.NR_LINII):
-            nr_linii += self.linie_deschisa(self.matr[i*self.NR_COLOANE:int(i+1)*self.NR_COLOANE], jucator)
-        # numaram coloanele
-        for j in range(self.NR_COLOANE):
-            nr_linii += self.linie_deschisa(self.matr[j::self.NR_COLOANE], jucator)
-        # cineva ar trebui sa faca si diagonalele
+        for i in range(self.NR_LINII - 1):
+            for j in range(0, self.NR_COLOANE - 2, 1):
+                nr_linii += self.linie_deschisa(self.matr[i*self.NR_COLOANE+j:i*self.NR_COLOANE+j+2]
+                        + self.matr[(i+1)*self.NR_COLOANE+j:(i+1)*self.NR_COLOANE+j+2], jucator)
 
         return nr_linii
 
@@ -155,10 +153,6 @@ class Joc:
         else:
             return 0
 
-    def estimare_scor2(self, jucator):
-        # to be continued
-        return
-
     def estimeaza_scor(self, adancime):
         t_final = self.final()
         # if (adancime==0):
@@ -169,7 +163,7 @@ class Joc:
         elif t_final == 'remiza':
             return 0
         else:
-            return (self.linii_deschise(self.__class__.JMAX) - self.linii_deschise(self.__class__.JMIN))
+            return (self.patrate_deschise(self.__class__.JMAX) - self.patrate_deschise(self.__class__.JMIN))
 
     def __str__(self):
         sir = "  |"
@@ -422,10 +416,6 @@ def main():
     Joc.NR_LINII = N
     Joc.NR_COLOANE = M
     tabla_curenta = Joc()
-    tabla_curenta.matr[75] = '0'
-    tabla_curenta.matr[57] = '0'
-    tabla_curenta.matr[47] = '0'
-    tabla_curenta.matr[27] = '0'
     nr_mut_calc = 0
     nr_mut_util = 0
     print("Tabla initiala")
