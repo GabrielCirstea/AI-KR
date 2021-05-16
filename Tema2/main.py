@@ -388,17 +388,6 @@ def get_input():
             print("Valoarea data este invalida,", exc)
 
     return [tip_algoritm, tip_nivel, adancime, N, M, '2']
-    #citire pentru interfata
-    if len(interfata) != 1:
-        raspuns_valid = False
-        while not raspuns_valid:
-            interface = input(
-                "Doriti sa jucati din consola sau prin interfata grafica? (raspundeti cu 1 sau 2)\n 1.Consola\n 2.-gui\n ")
-            if interface in ['1', '2']:
-                raspuns_valid = True
-            else:
-                print("Nu ati ales o varianta corecta.")
-
 
 def main():
 
@@ -424,191 +413,98 @@ def main():
     # creare stare initiala
     stare_curenta = Stare(tabla_curenta, 'x', adancime)
 
-    if (interface == '2'):
-        # setari interf grafica
-        time1_tot = int(round(time.time() * 1000))
-        pygame.init()
-        pygame.display.set_caption("Gabriel Cirstea x si 0")
-        # dimensiunea ferestrei in pixeli
-        ecran = pygame.display.set_mode(size=(M*81-1, N*81-1))  # Nrc*100+Nrc-1, Nrl*100+Nrl-1
+    # setari interf grafica
+    time1_tot = int(round(time.time() * 1000))
+    pygame.init()
+    pygame.display.set_caption("Gabriel Cirstea x si 0")
+    # dimensiunea ferestrei in pixeli
+    ecran = pygame.display.set_mode(size=(M*81-1, N*81-1))  # Nrc*100+Nrc-1, Nrl*100+Nrl-1
 
-        # de_mutat = False
-        patratele = deseneaza_grid(ecran, tabla_curenta.matr, N, M)
-        selected_piece = None
-        while True:
+    # de_mutat = False
+    patratele = deseneaza_grid(ecran, tabla_curenta.matr, N, M)
+    selected_piece = None
+    while True:
 
-            if (stare_curenta.j_curent == Joc.JMIN):
-                # muta jucatorul
-                # preiau timpul in milisecunde de dinainte de mutare
-                t_inainte = int(round(time.time() * 1000))
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    if event.type == pygame.MOUSEBUTTONDOWN:
+        if (stare_curenta.j_curent == Joc.JMIN):
+            # muta jucatorul
+            # preiau timpul in milisecunde de dinainte de mutare
+            t_inainte = int(round(time.time() * 1000))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
 
-                        pos = pygame.mouse.get_pos()  # coordonatele clickului
+                    pos = pygame.mouse.get_pos()  # coordonatele clickului
 
-                        for np in range(len(patratele)):
+                    for np in range(len(patratele)):
 
-                            if patratele[np].collidepoint(pos):
-                                linie = np // M
-                                coloana = np % M
-                                ###############################
-                                if stare_curenta.tabla_joc.matr[np] == Joc.JMIN:
-                                    selected_piece = np
-                                    patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr,\
-                                            N, M, np)
-                                if stare_curenta.tabla_joc.matr[np] == Joc.GOL:
-                                    if linie * M + coloana == stare_curenta.tabla_joc.Removed:
-                                        continue
-                                    if selected_piece:
-                                        stare_curenta.tabla_joc.salt_piesa(
-                                                selected_piece,np)
-                                    stare_curenta.tabla_joc.matr[np] = Joc.JMIN
-                                    nr_mut_util += 1
-                                    # afisarea starii jocului in urma mutarii utilizatorului
-                                    print("\nTabla dupa mutarea jucatorului")
-                                    print(str(stare_curenta))
-                                    # preiau timpul in milisecunde de dupa mutare
-                                    t_dupa = int(round(time.time() * 1000))
-                                    print("Utilizatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
-                                    patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M)
-                                    # testez daca jocul a ajuns intr-o stare finala
-                                    # si afisez un mesaj corespunzator in caz ca da
-                                    if (afis_daca_final(stare_curenta)):
-                                        break
+                        if patratele[np].collidepoint(pos):
+                            linie = np // M
+                            coloana = np % M
+                            ###############################
+                            if stare_curenta.tabla_joc.matr[np] == Joc.JMIN:
+                                selected_piece = np
+                                patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr,\
+                                        N, M, np)
+                            if stare_curenta.tabla_joc.matr[np] == Joc.GOL:
+                                if linie * M + coloana == stare_curenta.tabla_joc.Removed:
+                                    continue
+                                if selected_piece:
+                                    stare_curenta.tabla_joc.salt_piesa(
+                                            selected_piece,np)
+                                stare_curenta.tabla_joc.matr[np] = Joc.JMIN
+                                nr_mut_util += 1
+                                # afisarea starii jocului in urma mutarii utilizatorului
+                                print("\nTabla dupa mutarea jucatorului")
+                                print(str(stare_curenta))
+                                # preiau timpul in milisecunde de dupa mutare
+                                t_dupa = int(round(time.time() * 1000))
+                                print("Utilizatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
+                                patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M)
+                                # testez daca jocul a ajuns intr-o stare finala
+                                # si afisez un mesaj corespunzator in caz ca da
+                                if (afis_daca_final(stare_curenta)):
+                                    break
 
-                                    # S-a realizat o mutare. Schimb jucatorul cu cel opus
-                                    stare_curenta.j_curent = stare_curenta.jucator_opus()
+                                # S-a realizat o mutare. Schimb jucatorul cu cel opus
+                                stare_curenta.j_curent = stare_curenta.jucator_opus()
 
-            # --------------------------------
-            else:  # jucatorul e JMAX (calculatorul)
-                # Mutare calculator
-                t_inainte = int(round(time.time() * 1000))
+        # --------------------------------
+        else:  # jucatorul e JMAX (calculatorul)
+            # Mutare calculator
+            t_inainte = int(round(time.time() * 1000))
 
-                if tip_algoritm == '1':
-                    stare_actualizata = min_max(stare_curenta)
-                else:  # tip_algoritm==2
-                    stare_actualizata = alpha_beta(-500, 500, stare_curenta)
+            if tip_algoritm == '1':
+                stare_actualizata = min_max(stare_curenta)
+            else:  # tip_algoritm==2
+                stare_actualizata = alpha_beta(-500, 500, stare_curenta)
 
-                stare_curenta.tabla_joc = stare_actualizata.stare_aleasa.tabla_joc
-                nr_mut_calc += 1
+            stare_curenta.tabla_joc = stare_actualizata.stare_aleasa.tabla_joc
+            nr_mut_calc += 1
 
-                print("Tabla dupa mutarea calculatorului")
-                print(str(stare_curenta))
+            print("Tabla dupa mutarea calculatorului")
+            print(str(stare_curenta))
 
-                patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M)
-                # preiau timpul in milisecunde de dupa mutare
-                t_dupa = int(round(time.time() * 1000))
-                print("Calculatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
-                lista_timpi.append(t_dupa - t_inainte)
-                if (afis_daca_final(stare_curenta)):
-                    break
+            patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M)
+            # preiau timpul in milisecunde de dupa mutare
+            t_dupa = int(round(time.time() * 1000))
+            print("Calculatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
+            lista_timpi.append(t_dupa - t_inainte)
+            if (afis_daca_final(stare_curenta)):
+                break
 
-                # S-a realizat o mutare. Schimb jucatorul cu cel opus
-                stare_curenta.j_curent = stare_curenta.jucator_opus()
-        print("\nTimpul minim al calculatorului este ", min(lista_timpi), " milisecunde.\n")
-        print("\nTimpul maxim al calculatorului este ", max(lista_timpi), " milisecunde.\n")
-        print("\nMedia calculatorului este ", statistics.mean(lista_timpi), " milisecunde.\n")
-        print("\nMediana calculatorului este ", statistics.median(lista_timpi), " milisecunde.\n")
-        print("\nNumar mutari utilizator este ", nr_mut_util, "\n")
-        print("\nNumar mutari calculator este ", nr_mut_calc, "\n")
-        time2_tot = int(round(time.time() * 1000))
-        print("\nJocul a durat in total " + str(time2_tot-time1_tot) + " milisecunde.")
+            # S-a realizat o mutare. Schimb jucatorul cu cel opus
+            stare_curenta.j_curent = stare_curenta.jucator_opus()
+    print("\nTimpul minim al calculatorului este ", min(lista_timpi), " milisecunde.\n")
+    print("\nTimpul maxim al calculatorului este ", max(lista_timpi), " milisecunde.\n")
+    print("\nMedia calculatorului este ", statistics.mean(lista_timpi), " milisecunde.\n")
+    print("\nMediana calculatorului este ", statistics.median(lista_timpi), " milisecunde.\n")
+    print("\nNumar mutari utilizator este ", nr_mut_util, "\n")
+    print("\nNumar mutari calculator este ", nr_mut_calc, "\n")
+    time2_tot = int(round(time.time() * 1000))
+    print("\nJocul a durat in total " + str(time2_tot-time1_tot) + " milisecunde.")
 
-    else:
-        time1_tot = int(round(time.time() * 1000))
-        while True:
-            if (stare_curenta.j_curent == Joc.JMIN):
-                # muta utilizatorul
-
-                print("Acum muta utilizatorul cu simbolul", stare_curenta.j_curent)
-                # preiau timpul in milisecunde de dinainte de mutare
-                t_inainte = int(round(time.time() * 1000))
-                raspuns_valid = False
-                while not raspuns_valid:
-                    try:
-                        # utilizatorul poate opri jocul la orice mutare doreste
-                        linie = input("linie=")
-                        if linie.lower() == "exit":
-                            sys.exit()
-                        coloana = input("coloana=")
-                        if coloana.lower() == "exit":
-                            sys.exit()
-
-                        linie = int(linie)
-                        coloana = int(coloana)
-
-                        if (linie in range(Joc.NR_COLOANE) and coloana in range(Joc.NR_COLOANE)):
-                            if stare_curenta.tabla_joc.matr[linie * Joc.NR_COLOANE + coloana] == Joc.GOL:
-                                raspuns_valid = True
-                            else:
-                                print("Exista deja un simbol in pozitia ceruta.")
-                        else:
-                            print("Linie sau coloana invalida (trebuie sa fie unul dintre numerele 0,1,2).")
-
-                    except ValueError:
-                        print("Linia si coloana trebuie sa fie numere intregi")
-
-                # dupa iesirea din while sigur am valide atat linia cat si coloana
-                # deci pot plasa simbolul pe "tabla de joc"
-                stare_curenta.tabla_joc.matr[linie * Joc.NR_COLOANE + coloana] = Joc.JMIN
-                nr_mut_util += 1
-                # afisarea starii jocului in urma mutarii utilizatorului
-                print("\nTabla dupa mutarea jucatorului")
-                print(str(stare_curenta))
-                # preiau timpul in milisecunde de dupa mutare
-                t_dupa = int(round(time.time() * 1000))
-                print("Utilizatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
-                # testez daca jocul a ajuns intr-o stare finala
-                # si afisez un mesaj corespunzator in caz ca da
-                if (afis_daca_final(stare_curenta)):
-                    break
-
-                # S-a realizat o mutare. Schimb jucatorul cu cel opus
-                stare_curenta.j_curent = stare_curenta.jucator_opus()
-
-            # --------------------------------
-            else:  # jucatorul e JMAX (calculatorul)
-                # Mutare calculator
-
-                print("Acum muta calculatorul cu simbolul", stare_curenta.j_curent)
-                # preiau timpul in milisecunde de dinainte de mutare
-                t_inainte = int(round(time.time() * 1000))
-
-                # stare actualizata e starea mea curenta in care am setat stare_aleasa (mutarea urmatoare)
-                if tip_algoritm == '1':
-                    stare_actualizata = min_max(stare_curenta)
-                else:  # tip_algoritm==2
-                    stare_actualizata = alpha_beta(-500, 500, stare_curenta)
-
-                stare_curenta.tabla_joc = stare_actualizata.stare_aleasa.tabla_joc
-                nr_mut_calc += 1
-
-                stare_curenta.tabla_joc = stare_actualizata.stare_aleasa.tabla_joc  # aici se face de fapt mutarea
-
-                print("Tabla dupa mutarea calculatorului")
-                print(str(stare_curenta))
-
-                # preiau timpul in milisecunde de dupa mutare
-                t_dupa = int(round(time.time() * 1000))
-                print("Calculatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
-                lista_timpi.append(t_dupa - t_inainte)
-                if (afis_daca_final(stare_curenta)):
-                    break
-
-                # S-a realizat o mutare.  jucatorul cu cel opus
-                stare_curenta.j_curent = stare_curenta.jucator_opus()
-
-        print("\nTimpul minim al calculatorului este ", min(lista_timpi), " milisecunde.\n")
-        print("\nTimpul maxim al calculatorului este ", max(lista_timpi), " milisecunde.\n")
-        print("\nMedia calculatorului este ", statistics.mean(lista_timpi), " milisecunde.\n")
-        print("\nMediana calculatorului este ", statistics.median(lista_timpi), " milisecunde.\n")
-        print("\nNumar mutari utilizator este ", nr_mut_util, "\n")
-        print("\nNumar mutari calculator este ", nr_mut_calc, "\n")
-        time2_tot = int(round(time.time() * 1000))
-        print("\nJocul a durat in total " + str(time2_tot - time1_tot) + " milisecunde.")
 
 if __name__ == "__main__":
     main()
