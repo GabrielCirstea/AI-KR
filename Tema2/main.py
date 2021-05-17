@@ -54,6 +54,7 @@ class Joc:
     def final(self):
         def in_patrat(tabla, index):
             # verificam daca index se afla in coltul din stanga sus
+            # al unui patrat de piese
             player = tabla[index]
             if self.NR_COLOANE - index % self.NR_COLOANE< 2:
                 return False
@@ -77,14 +78,16 @@ class Joc:
     def validitate(self):
         return
 
-    def salt_piesa(self, selected, index):
+    def salt_piesa(self, selected, index, target, tabla = None):
+        if tabla == None:
+            tabla = self.matr
         # coord unde vrem sa punem
         xIndex = index // self.NR_COLOANE
         yIndex = index %  self.NR_COLOANE
         # coord piesa selectata
         xSelected = selected // self.NR_COLOANE
         ySelected = selected % self.NR_COLOANE
-        print(xSelected, ySelected)
+        # print(xSelected, ySelected)
         
         # verific ca locul dorit sa fie pe diagonala
         if xIndex - xSelected not in [-2, 2] or\
@@ -94,18 +97,50 @@ class Joc:
         xMijloc = (xIndex + xSelected)//2
         yMijloc = (yIndex + ySelected)//2
         indexMijloc = xMijloc * self.NR_COLOANE + yMijloc
-        if self.matr[indexMijloc] == '0':
-            self.matr[indexMijloc] = self.__class__.GOL
+        if tabla[indexMijloc] == target:
+            tabla[indexMijloc] = self.__class__.GOL
             self.Removed = indexMijloc
             return True
+
+    def salt_daca_oponent(self, index):
+        """
+        Verifica da piesa are pe diagonala o piesa inamica
+        In caz afirmativ incearca sa faca un salt pentru a elimina piesa de pe
+        diagonala
+        Returneaza o lista de mutari in care s-au facut salturi
+        """
+        jucator = self.matr[index];
+        x = index // self.NR_COLOANE
+        y = index %  self.NR_COLOANE
+        # copii nu scrieti cod asa
+        celalalt = 'x' if jucator == '0' else '0'
+        diagonale = [-1,1]
+        l_mutari = []
+        for i in diagonale:
+            for j in diagonale:
+                pos = (x+i)*self.NR_COLOANE + (y+j)
+                if self.matr[pos] == celalalt:
+                    selected = (x+2*i)*self.NR_COLOANE + (y+2*j)
+                    if(self.matr[selected] != Joc.GOL):
+                        continue
+                    copie = copy.deepcopy(self.matr)
+                    copie[selected] = jucator
+                    self.salt_piesa(selected, index, celalalt, tabla=copie)
+                    l_mutari.append(copie)
+        return l_mutari
 
     def mutari(self, jucator_opus):
         l_mutari = []
         for i in range(len(self.matr)):
-            if i != self.Removed and self.matr[i] == self.__class__.GOL:
-                matr_tabla_noua = copy.deepcopy(self.matr)
-                matr_tabla_noua[i] = jucator_opus
-                l_mutari.append(Joc(matr_tabla_noua))
+            if i != self.Removed:
+                if self.matr[i] == self.__class__.GOL:
+                    matr_tabla_noua = copy.deepcopy(self.matr)
+                    matr_tabla_noua[i] = jucator_opus
+                    l_mutari.append(Joc(matr_tabla_noua))
+                if self.matr[i] == jucator_opus:
+                    mutari = self.salt_daca_oponent(i)
+                    for mutare in mutari:
+                        l_mutari.append(Joc(mutare))
         return l_mutari
 
     # linie deschisa inseamna linie pe care jucatorul mai poate forma o configuratie castigatoare
@@ -132,8 +167,8 @@ class Joc:
         nr_linii = 0
         for i in range(self.NR_LINII - 1):
             for j in range(0, self.NR_COLOANE - 2, 1):
-                nr_linii += self.linie_deschisa(self.matr[i*self.NR_COLOANE+j:i*self.NR_COLOANE+j+2]
-                        + self.matr[(i+1)*self.NR_COLOANE+j:(i+1)*self.NR_COLOANE+j+2], jucator)
+                nr_linii += self.linie_deschisa(self.matr[i*self.NR_COLOANE+j : i*self.NR_COLOANE+j+1]
+                        + self.matr[(i+1)*self.NR_COLOANE+j : (i+1)*self.NR_COLOANE+j+1], jucator)
 
         return nr_linii
 
@@ -334,10 +369,10 @@ def get_input():
         while not raspuns_valid:
             try:
                 adancime = int(input("Dati adancimea dorita pentru nivelul incepator: "))
-                if (type(adancime) is int and adancime>=1 and adancime<=5):
+                if (type(adancime) is int and adancime>=1 and adancime<=3):
                     raspuns_valid = True
                     break
-                print("Adancimea trebuie sa fie in intervalul [1;5]")
+                print("Adancimea trebuie sa fie in intervalul [1;3]")
             except Exception as exc:
                 print("Valoarea data este invalida,", exc)
 
@@ -346,10 +381,10 @@ def get_input():
         while not raspuns_valid:
             try:
                 adancime = int(input("Dati adancimea dorita pentru nivelul mediu: "))
-                if (type(adancime) is int and adancime>=6 and adancime<=10):
+                if (type(adancime) is int and adancime>=4 and adancime<=6):
                     raspuns_valid = True
                     break
-                print("Adancimea trebuie sa fie in intervalul [6;10]") # adancime foarte mare ca
+                print("Adancimea trebuie sa fie in intervalul [4;6]") # adancime foarte mare ca
             except Exception as exc:
                 print("Valoarea data este invalida,", exc)
 
@@ -358,36 +393,25 @@ def get_input():
         while not raspuns_valid:
             try:
                 adancime = int(input("Dati adancimea dorita pentru nivelul avansat: "))
-                if (type(adancime) is int and adancime>=11):
+                if (type(adancime) is int and adancime>=6):
                     raspuns_valid = True
                     break
-                print("Adancimea trebuie sa fie in intervalul [11;inf]")
+                print("Adancimea trebuie sa fie in intervalul [6;inf]")
             except Exception as exc:
                 print("Valoarea data este invalida,", exc)
     #specificarea dimensiunilor tablei de joc
     raspuns_valid = False
     while not raspuns_valid:
         try:
-            N = int(input("Dati numarul de linii dorit "))
-            if ((type(N) is int) and (N <= 10 and N >= 5 and N%2 != 0)):
-                raspuns_valid = True
-                break
-            print("Numarul de linii trebuie sa fie impar si sa se afle in intervalul [5;10]")
-        except Exception as exc:
-            print("Valoarea data este invalida,", exc)
-
-    raspuns_valid = False
-    while not raspuns_valid:
-        try:
-            M = int(input("Dati numarul de coloane dorit "))
-            if ((type(M) is int) and (M <= 10 and M >= 5 and M%2 == 0)):
+            N = int(input("Dati numarul de coloane dorit "))
+            if ((type(N) is int) and (N <= 10 and N >= 5 and N%2 == 0)):
                 raspuns_valid = True
                 break
             print("Numarul de coloane trebuie sa fie par si sa se afle in intervalul [5;10]")
         except Exception as exc:
             print("Valoarea data este invalida,", exc)
 
-    return [tip_algoritm, tip_nivel, adancime, N, M, '2']
+    return (tip_algoritm, tip_nivel, adancime, N, N)
 
 def main():
 
@@ -398,12 +422,11 @@ def main():
     Joc.JMIN = "x"
     N = 9   # linii
     M = 10  # coloane
-    interface = '2'
-    # (tip_algoritm, tip_nivel, SCMAX, adancime, N, M, interface) = get_input()
+    # (tip_algoritm, tip_nivel, adancime, N, M) = get_input()
 
     # initializare tabla
-    Joc.NR_LINII = N
-    Joc.NR_COLOANE = M
+    Joc.NR_LINII = int(N)
+    Joc.NR_COLOANE = int(M)
     tabla_curenta = Joc()
     nr_mut_calc = 0
     nr_mut_util = 0
@@ -452,7 +475,7 @@ def main():
                                     continue
                                 if selected_piece:
                                     stare_curenta.tabla_joc.salt_piesa(
-                                            selected_piece,np)
+                                            selected_piece,np, Joc.JMAX)
                                 stare_curenta.tabla_joc.matr[np] = Joc.JMIN
                                 nr_mut_util += 1
                                 # afisarea starii jocului in urma mutarii utilizatorului
@@ -462,10 +485,6 @@ def main():
                                 t_dupa = int(round(time.time() * 1000))
                                 print("Utilizatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
                                 patratele = deseneaza_grid(ecran, stare_curenta.tabla_joc.matr, N, M)
-                                # testez daca jocul a ajuns intr-o stare finala
-                                # si afisez un mesaj corespunzator in caz ca da
-                                if (afis_daca_final(stare_curenta)):
-                                    break
 
                                 # S-a realizat o mutare. Schimb jucatorul cu cel opus
                                 stare_curenta.j_curent = stare_curenta.jucator_opus()
@@ -491,17 +510,22 @@ def main():
             t_dupa = int(round(time.time() * 1000))
             print("Calculatorul a \"gandit\" timp de " + str(t_dupa - t_inainte) + " milisecunde.")
             lista_timpi.append(t_dupa - t_inainte)
-            if (afis_daca_final(stare_curenta)):
-                break
 
             # S-a realizat o mutare. Schimb jucatorul cu cel opus
             stare_curenta.j_curent = stare_curenta.jucator_opus()
+
+        # testez daca jocul a ajuns intr-o stare finala
+        # si afisez un mesaj corespunzator in caz ca da
+        if (afis_daca_final(stare_curenta)):
+            print("final")
+            break
+
     print("\nTimpul minim al calculatorului este ", min(lista_timpi), " milisecunde.\n")
     print("\nTimpul maxim al calculatorului este ", max(lista_timpi), " milisecunde.\n")
     print("\nMedia calculatorului este ", statistics.mean(lista_timpi), " milisecunde.\n")
     print("\nMediana calculatorului este ", statistics.median(lista_timpi), " milisecunde.\n")
-    print("\nNumar mutari utilizator este ", nr_mut_util, "\n")
-    print("\nNumar mutari calculator este ", nr_mut_calc, "\n")
+    print("\nNumar mutari utilizator: ", nr_mut_util, "\n")
+    print("\nNumar mutari calculator: ", nr_mut_calc, "\n")
     time2_tot = int(round(time.time() * 1000))
     print("\nJocul a durat in total " + str(time2_tot-time1_tot) + " milisecunde.")
 
