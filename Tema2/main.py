@@ -75,9 +75,6 @@ class Joc:
         if nr_liber == 0:
             return "remiza"
 
-    def validitate(self):
-        return
-
     def salt_piesa(self, selected, index, target, tabla = None):
         if tabla == None:
             tabla = self.matr
@@ -119,8 +116,12 @@ class Joc:
         for i in diagonale:
             for j in diagonale:
                 pos = (x+i)*self.NR_COLOANE + (y+j)
+                if pos < 0 or pos > len(self.matr) - 1:
+                    continue
                 if self.matr[pos] == celalalt:
                     selected = (x+2*i)*self.NR_COLOANE + (y+2*j)
+                    if(selected < 0 or selected > len(self.matr)-1):
+                        continue
                     if(self.matr[selected] != Joc.GOL):
                         continue
                     copie = copy.deepcopy(self.matr)
@@ -339,7 +340,7 @@ def get_input():
     # specificare tip algoritm
     raspuns_valid = False
     while not raspuns_valid:
-        tip_algoritm = input("Algoritmul folosit? (raspundeti cu 1 sau 2)\n 1.Minimax\n 2.Alpha-beta\n ")
+        tip_algoritm = input("Algoritmul folosit?\n 1.Minimax\n 2.Alpha-beta\n ")
         if tip_algoritm in ['1', '2']:
             raspuns_valid = True
         else:
@@ -347,7 +348,7 @@ def get_input():
 
     raspuns_valid = False
     while not raspuns_valid:
-        tip_nivel = input("Ce nivel de dificultate doriti? (raspundeti cu 1, 2 sau 3)\n 1.Incepator\n 2.Mediu\n 3.Avansat\n ")
+        tip_nivel = input("Ce nivel de dificultate doriti?\n 1.Incepator\n 2.Mediu\n 3.Avansat\n ")
         if tip_nivel in ['1', '2', '3']:
             raspuns_valid = True
         else:
@@ -404,10 +405,10 @@ def get_input():
     while not raspuns_valid:
         try:
             N = int(input("Dati numarul de coloane dorit "))
-            if ((type(N) is int) and (N <= 10 and N >= 5 and N%2 == 0)):
+            if ((type(N) is int) and (N <= 10 and N > 5 and N%2 == 0)):
                 raspuns_valid = True
                 break
-            print("Numarul de coloane trebuie sa fie par si sa se afle in intervalul [5;10]")
+            print("Numarul de coloane trebuie sa fie par si sa se afle in intervalul [6;10]")
         except Exception as exc:
             print("Valoarea data este invalida,", exc)
 
@@ -422,7 +423,7 @@ def main():
     Joc.JMIN = "x"
     N = 9   # linii
     M = 10  # coloane
-    # (tip_algoritm, tip_nivel, adancime, N, M) = get_input()
+    (tip_algoritm, tip_nivel, adancime, N, M) = get_input()
 
     # initializare tabla
     Joc.NR_LINII = int(N)
@@ -517,17 +518,16 @@ def main():
         # testez daca jocul a ajuns intr-o stare finala
         # si afisez un mesaj corespunzator in caz ca da
         if (afis_daca_final(stare_curenta)):
-            print("final")
             break
 
-    print("\nTimpul minim al calculatorului este ", min(lista_timpi), " milisecunde.\n")
-    print("\nTimpul maxim al calculatorului este ", max(lista_timpi), " milisecunde.\n")
-    print("\nMedia calculatorului este ", statistics.mean(lista_timpi), " milisecunde.\n")
-    print("\nMediana calculatorului este ", statistics.median(lista_timpi), " milisecunde.\n")
-    print("\nNumar mutari utilizator: ", nr_mut_util, "\n")
-    print("\nNumar mutari calculator: ", nr_mut_calc, "\n")
+    print("Timpul minim al calculatorului este ", min(lista_timpi), " milisecunde.")
+    print("Timpul maxim al calculatorului este ", max(lista_timpi), " milisecunde.")
+    print("Media calculatorului este ", statistics.mean(lista_timpi), " milisecunde.")
+    print("Mediana calculatorului este ", statistics.median(lista_timpi), " milisecunde.")
+    print("Numar mutari utilizator: ", nr_mut_util)
+    print("Numar mutari calculator: ", nr_mut_calc)
     time2_tot = int(round(time.time() * 1000))
-    print("\nJocul a durat in total " + str(time2_tot-time1_tot) + " milisecunde.")
+    print("Jocul a durat in total " + str(time2_tot-time1_tot) + " milisecunde.")
 
 
 if __name__ == "__main__":
