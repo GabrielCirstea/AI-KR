@@ -70,16 +70,20 @@ class NodParcurgere:
 
 class Graph:
 
+    tip_blocuri = ["sfera", "cub", "piramida"]
+
     def __init__(self, nume_fisier):
 
         def obtineStive(sir):
+            # parseaza sir-ul din fisier
 
             stiveSiruri = sir.strip().split("\n")
             if stiveSiruri[0].isdecimal():
                 self.K = int(stiveSiruri[0])
                 listaStive = [sirStiva.strip().split(",") if sirStiva != "#" else [] for sirStiva in stiveSiruri[1:]]
             else:
-                listaStive = [sirStiva.strip().split(",") if sirStiva != "#" else [] for sirStiva in stiveSiruri]
+                print("NU e un fisier bun!!!")
+                exit()
             listaSt1 = []
             for idx in range(len(listaStive)):
                 listaSt2 = []
@@ -123,8 +127,8 @@ class Graph:
             for elem in range(len(self.start[idx])):
                 # blocuri de o parte si de alta a sferei
                 if self.start[idx][elem][0] == "sfera" and (idx == 0 or idx == nr_stive - 1 or
-                                                            self.start[idx - 1][elem][0] not in ["cub", "sfera"] or
-                                                            self.start[idx + 1][elem][0] not in ["cub", "sfera"]):
+                                                            self.start[idx - 1][elem][0] not in self.tip_blocuri  or
+                                                            self.start[idx + 1][elem][0] not in self.tip_blocuri ):
                     return False
                 # nimic peste piramida
                 if self.start[idx][elem][0] == "piramida" and (len(self.start[idx]) - elem != 1):
@@ -141,8 +145,8 @@ class Graph:
                     nrpir += 1
                     ok = 1
                 if self.start[idx][elem][0] == "sfera" and (idx != 0 and idx != nr_stive - 1 and
-                                                            self.start[idx - 1][elem][0] in ["cub", "sfera"] and
-                                                            self.start[idx + 1][elem][0] in ["cub", "sfera"]):
+                                                            self.start[idx - 1][elem][0] in self.tip_blocuri  and
+                                                            self.start[idx + 1][elem][0] in self.tip_blocuri ):
                     nrsfereincadrate += 1
                 if self.start[idx][elem][0] == " ":
                     nrstivegoale += 1
@@ -155,9 +159,6 @@ class Graph:
         if self.K != 0 and (nrpir == nr_stive or nr_stive - 1) and (nrstivegoale + nrstivefarapir) < nrpir:
             print("Starea data nu are solutii")
             return
-        '''if self.K != 0 and nrstivegoale < nrsfereincadrate:
-            print("Starea data nu are solutii")
-            return'''
 
         return True
 
@@ -200,10 +201,10 @@ class Graph:
                     if j in (0, nr_stive - 1):
                         continue
                     if not (len(stive_n[j - 1]) >= len(stive_n[j]) + 1 and 
-                            stive_n[j - 1][len(stive_n[j])][0] in ["cub", "sfera"]):
+                            stive_n[j - 1][len(stive_n[j])][0] in self.tip_blocuri):
                         continue
                     if not (len(stive_n[j + 1]) >= len(stive_n[j]) + 1 and 
-                            stive_n[j + 1][len(stive_n[j])][0] in ["cub", "sfera"]):
+                            stive_n[j + 1][len(stive_n[j])][0] in self.tip_blocuri):
                         continue
 
                 stive_n[j].append(bloc)
@@ -333,10 +334,10 @@ def uniform_cost(gr, nrSolutiiCautate=1, fisier=sys.stdout):
     global timeout
     #in coada vom avea doar noduri de tip NodParcurgere (nodurile din arborele de parcurgere)
     c=[NodParcurgere(gr.start, None, 0)]
-    
+
     while len(c)>0:
         nodCurent=c.pop(0)
-        
+
         if gr.testeaza_scop(nodCurent):
             time_sol = time.time()
             fisier.write("\nSolutie:\n")
@@ -357,7 +358,7 @@ def uniform_cost(gr, nrSolutiiCautate=1, fisier=sys.stdout):
             print("timeout=",timeout)
             return
 
-        lSuccesori=gr.genereazaSuccesori(nodCurent)     
+        lSuccesori=gr.genereazaSuccesori(nodCurent)
         nr_nod += len(lSuccesori)
         for s in lSuccesori:
             i=0
